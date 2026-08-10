@@ -40,15 +40,22 @@
       display: flex;
       flex-direction: column;
       gap: 8px;
-      margin-bottom: 20px;
+      margin-bottom: 15px;
     }
-    input[type="password"], input[type="text"] {
+    .input-row {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+    input[type="password"], input[type="number"] {
       padding: 10px;
       background: #2a2a2a;
       border: 1px solid #444;
       color: #fff;
       border-radius: 4px;
       font-size: 1rem;
+      width: 100%;
+      box-sizing: border-box;
     }
     button {
       padding: 10px 15px;
@@ -73,23 +80,43 @@
       display: flex;
       gap: 10px;
     }
+    label {
+      font-size: 0.9rem;
+      color: #aaa;
+    }
   </style>
 </head>
 <body>
 
   <h1>Torn City - Monitor de Barras</h1>
 
-  <!-- Gerenciamento da API Key -->
+  <!-- Configurações do Usuário -->
   <div class="card">
     <div class="input-group">
-      <label for="apiKey">Sua API Key do Torn:</label>
+      <label for="apiKey">API Key do Torn:</label>
       <input type="password" id="apiKey" placeholder="Cole sua API Key aqui..." />
-      <div class="actions">
-        <button onclick="saveApiKey()" style="flex: 1;">Salvar Chave</button>
-        <button onclick="clearApiKey()" class="btn-secondary">Remover</button>
+    </div>
+
+    <div class="input-group">
+      <label>Alertar quando atingir:</label>
+      <div class="input-row">
+        <div>
+          <label for="targetEnergy">⚡ Energy:</label>
+          <input type="number" id="targetEnergy" placeholder="Ex: 25" min="1" />
+        </div>
+        <div>
+          <label for="targetNerve">👊 Nerve:</label>
+          <input type="number" id="targetNerve" placeholder="Ex: 2" min="1" />
+        </div>
       </div>
     </div>
-    <button onclick="requestNotificationPermission()" class="btn-secondary" style="width: 100%;">
+
+    <div class="actions">
+      <button onclick="saveSettings()" style="flex: 1;">Salvar Configurações</button>
+      <button onclick="clearSettings()" class="btn-secondary">Limpar</button>
+    </div>
+
+    <button onclick="requestNotificationPermission()" class="btn-secondary" style="width: 100%; margin-top: 10px;">
       🔔 Ativar Notificações do Navegador
     </button>
   </div>
@@ -121,28 +148,47 @@
     // --- CARREGAMENTO INICIAL ---
     window.onload = () => {
       const savedKey = localStorage.getItem('torn_api_key');
-      if (savedKey) {
-        document.getElementById('apiKey').value = savedKey;
-        fetchBars();
-      }
+      const savedEnergy = localStorage.getItem('torn_target_energy');
+      const savedNerve = localStorage.getItem('torn_target_nerve');
+
+      if (savedKey) document.getElementById('apiKey').value = savedKey;
+      if (savedEnergy) document.getElementById('targetEnergy').value = savedEnergy;
+      if (savedNerve) document.getElementById('targetNerve').value = savedNerve;
+
+      if (savedKey) fetchBars();
     };
 
     // --- MANIPULAÇÃO DO LOCALSTORAGE ---
-    function saveApiKey() {
+    function saveSettings() {
       const key = document.getElementById('apiKey').value.trim();
+      const energy = document.getElementById('targetEnergy').value;
+      const nerve = document.getElementById('targetNerve').value;
+
       if (!key) {
         alert('Por favor, digite uma API Key válida.');
         return;
       }
+
       localStorage.setItem('torn_api_key', key);
-      alert('API Key salva localmente com sucesso!');
+      if (energy) localStorage.setItem('torn_target_energy', energy);
+      else localStorage.removeItem('torn_target_energy');
+
+      if (nerve) localStorage.setItem('torn_target_nerve', nerve);
+      else localStorage.removeItem('torn_target_nerve');
+
+      alert('Configurações salvas com sucesso!');
       fetchBars();
     }
 
-    function clearApiKey() {
+    function clearSettings() {
       localStorage.removeItem('torn_api_key');
+      localStorage.removeItem('torn_target_energy');
+      localStorage.removeItem('torn_target_nerve');
+
       document.getElementById('apiKey').value = '';
-      alert('API Key removida!');
+      document.getElementById('targetEnergy').value = '';
+      document.getElementById('targetNerve').value = '';
+      alert('Configurações removidas!');
     }
 
     // --- NOTIFICAÇÕES & ALARMES ---
@@ -161,10 +207,8 @@
     }
 
     function sendAlert(title, message) {
-      // 1. Toca o som de aviso em áudio sintetizado
       playBeep();
 
-      // 2. Dispara Notificação do Navegador (se permitida)
       if ('Notification' in window && Notification.permission === 'granted') {
         new Notification(title, {
           body: message,
@@ -191,13 +235,29 @@
       }
     }
 
-    // --- TEMPORIZADOR ---
+    // --- TEMPORIZADOR E CÁLCULO ---
     function formatTime(seconds) {
-      if (seconds <= 0) return "CHEIA!";
+      if (seconds <= 0) return "ALVO ATINGIDO!";
       const h = Math.floor(seconds / 3600).toString().padStart(2, '0');
       const m = Math.floor((seconds % 3600) / 60).toString().padStart(2, '0');
       const s = (seconds % 60).toString().padStart(2, '0');
       return `${h}:${m}:${s}`;
+    }
+
+    function calculateSecondsToTarget(bar, targetValue) {
+      const current = bar.current;
+      const target = targetValue ? parseInt(targetValue, 10) : bar.maximum;
+
+      // Se já passou ou está no alvo
+      if (current >= target) return 0;
+
+      // Quantos pontos faltam
+      const needed = target - current;
+      // Quantos ticks são necessários
+      const ticksNeeded = Math.ceil(needed / bar.increment);
+
+      // Tempo total = (ticks restantes - 1) * intervalo + tempo até o próximo tick
+      return ((ticksNeeded - 1) * bar.interval) + bar.tick_time;
     }
 
     function startCountdown(elementId, initialSeconds, onComplete) {
@@ -219,13 +279,14 @@
     // --- REQUISIÇÃO À API ---
     async function fetchBars() {
       const apiKey = localStorage.getItem('torn_api_key') || document.getElementById('apiKey').value.trim();
+      const targetEnergy = localStorage.getItem('torn_target_energy') || document.getElementById('targetEnergy').value;
+      const targetNerve = localStorage.getItem('torn_target_nerve') || document.getElementById('targetNerve').value;
 
       if (!apiKey) {
         alert('Por favor, insira e salve sua API Key primeiro.');
         return;
       }
 
-      // Limpa os intervalos anteriores antes de recalcular
       clearInterval(energyInterval);
       clearInterval(nerveInterval);
 
@@ -248,24 +309,30 @@
 
         // --- ENERGY ---
         document.getElementById('energy-val').innerText = `${bars.energy.current} / ${bars.energy.maximum}`;
-        if (bars.energy.full_time > 0) {
-          energyInterval = startCountdown('energy-timer', bars.energy.full_time, () => {
+        const energyTime = calculateSecondsToTarget(bars.energy, targetEnergy);
+        const energyGoalText = targetEnergy ? targetEnergy : 'máximo';
+
+        if (energyTime > 0) {
+          energyInterval = startCountdown('energy-timer', energyTime, () => {
             clearInterval(energyInterval);
-            sendAlert('⚡ Energy Recarregada!', 'Sua barra de Energy atingiu o máximo no Torn City.');
+            sendAlert('⚡ Energy Pronta!', `Sua Energy atingiu a meta configurada (${energyGoalText})!`);
           });
         } else {
-          document.getElementById('energy-timer').innerText = "CHEIA!";
+          document.getElementById('energy-timer').innerText = "ALVO ATINGIDO!";
         }
 
         // --- NERVE ---
         document.getElementById('nerve-val').innerText = `${bars.nerve.current} / ${bars.nerve.maximum}`;
-        if (bars.nerve.full_time > 0) {
-          nerveInterval = startCountdown('nerve-timer', bars.nerve.full_time, () => {
+        const nerveTime = calculateSecondsToTarget(bars.nerve, targetNerve);
+        const nerveGoalText = targetNerve ? targetNerve : 'máximo';
+
+        if (nerveTime > 0) {
+          nerveInterval = startCountdown('nerve-timer', nerveTime, () => {
             clearInterval(nerveInterval);
-            sendAlert('👊 Nerve Recarregado!', 'Sua barra de Nerve atingiu o máximo no Torn City.');
+            sendAlert('👊 Nerve Pronto!', `Seu Nerve atingiu a meta configurada (${nerveGoalText})!`);
           });
         } else {
-          document.getElementById('nerve-timer').innerText = "CHEIA!";
+          document.getElementById('nerve-timer').innerText = "ALVO ATINGIDO!";
         }
 
       } catch (err) {
