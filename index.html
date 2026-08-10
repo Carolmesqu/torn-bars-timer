@@ -6,142 +6,193 @@
   <title>Torn City - Bar Monitor & Alarmes</title>
   <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@500;600;700&display=swap" rel="stylesheet">
   <style>
-      :root {
-        --bg: #faf7fb;
-        --card-bg: #ffffff;
-        --text-main: #4a424d;
-        --text-muted: #8e8593;
-        --accent-pink: #f4c2c2;
-        --accent-lilac: #dcd6f7;
-        --accent-btn: #b39ddb;
-        --btn-hover: #9fa8da;
-        --border-color: #f0e6f2;
-      }
-  
-      body {
-        font-family: 'Quicksand', 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
-        background: var(--bg);
-        color: var(--text-main);
-        padding: 30px 20px;
-        max-width: 440px;
-        margin: 0 auto;
-      }
-  
-      h1 {
-        font-size: 1.4rem;
-        font-weight: 600;
-        text-align: center;
-        color: #5d4a66;
-        margin-bottom: 25px;
-        letter-spacing: -0.5px;
-      }
-  
-      .card {
-        background: var(--card-bg);
-        padding: 20px;
-        margin-bottom: 16px;
-        border-radius: 16px;
-        border: 1px solid var(--border-color);
-        box-shadow: 0 4px 15px rgba(220, 214, 247, 0.25);
-      }
-  
-      .card-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-      }
-  
-      .card-header h3 {
-        margin: 0;
-        font-size: 1.1rem;
-        font-weight: 600;
-        color: #5d4a66;
-      }
-  
-      .status {
-        font-weight: 700;
-        font-size: 1.25em;
-        color: #8e7cc3;
-        margin-top: 8px;
-      }
-  
-      .input-group {
-        display: flex;
-        flex-direction: column;
-        gap: 6px;
-        margin-bottom: 14px;
-      }
-  
-      .input-row {
-        display: flex;
-        gap: 12px;
-        align-items: center;
-      }
-  
-      label {
-        font-size: 0.85rem;
-        color: var(--text-muted);
-        font-weight: 500;
-      }
-  
-      input[type="password"], 
-      input[type="number"] {
-        padding: 10px 14px;
-        background: #fdfbfd;
-        border: 1.5px solid var(--border-color);
-        color: var(--text-main);
-        border-radius: 10px;
-        font-size: 0.95rem;
-        width: 100%;
-        box-sizing: border-box;
-        outline: none;
-        transition: all 0.2s ease;
-      }
-  
-      input[type="password"]:focus, 
-      input[type="number"]:focus {
-        border-color: var(--accent-btn);
-        background: #fff;
-      }
-  
-      button {
-        padding: 11px 16px;
-        background: var(--accent-btn);
-        color: #fff;
-        border: none;
-        border-radius: 10px;
-        cursor: pointer;
-        font-size: 0.9rem;
-        font-weight: 600;
-        transition: background 0.2s ease, transform 0.1s ease;
-      }
-  
-      button:hover {
-        background: var(--btn-hover);
-      }
-  
-      button:active {
-        transform: scale(0.98);
-      }
-  
-      .btn-secondary {
-        background: #e2d9f3;
-        color: #5d4a66;
-      }
-  
-      .btn-secondary:hover {
-        background: #d4c5ed;
-      }
-  
-      .actions {
-        display: flex;
-        gap: 10px;
-      }
+    @import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@500;600;700&display=swap');
+
+    /* Palette - Modo Claro (Soft Pink & Lilac) */
+    :root {
+      --bg: #fff5f8;
+      --card-bg: #ffffff;
+      --text-main: #5b4656;
+      --text-muted: #a38c9d;
+      --accent-pink: #ffb7c5;
+      --accent-purple: #cbb4d5;
+      --accent-btn: #e8a7bd;
+      --btn-hover: #df93ab;
+      --border-color: #f7dbe4;
+      --shadow: 0 8px 20px rgba(232, 167, 189, 0.15);
+      --input-bg: #fff9fc;
+    }
+
+    /* Palette - Modo Escuro (Cute Night) */
+    [data-theme="dark"] {
+      --bg: #1f1822;
+      --card-bg: #2a212e;
+      --text-main: #f5eaf2;
+      --text-muted: #ba9ebb;
+      --accent-pink: #e295aa;
+      --accent-purple: #b392c0;
+      --accent-btn: #b07289;
+      --btn-hover: #9c6076;
+      --border-color: #3d2f43;
+      --shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+      --input-bg: #241c27;
+    }
+
+    body {
+      font-family: 'Quicksand', 'Segoe UI', sans-serif;
+      background: var(--bg);
+      color: var(--text-main);
+      padding: 30px 20px;
+      max-width: 440px;
+      margin: 0 auto;
+      transition: background 0.3s ease, color 0.3s ease;
+    }
+
+    .header-container {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    h1 {
+      font-size: 1.35rem;
+      font-weight: 700;
+      color: var(--text-main);
+      margin: 0;
+      letter-spacing: -0.3px;
+    }
+
+    .theme-toggle {
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      color: var(--text-main);
+      padding: 6px 12px;
+      border-radius: 20px;
+      cursor: pointer;
+      font-size: 0.85rem;
+      font-weight: 600;
+      box-shadow: var(--shadow);
+      transition: all 0.2s ease;
+    }
+
+    .theme-toggle:hover {
+      transform: scale(1.05);
+    }
+
+    .card {
+      background: var(--card-bg);
+      padding: 20px;
+      margin-bottom: 16px;
+      border-radius: 20px;
+      border: 1px solid var(--border-color);
+      box-shadow: var(--shadow);
+      transition: background 0.3s ease, border-color 0.3s ease;
+    }
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .card-header h3 {
+      margin: 0;
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: var(--text-main);
+    }
+
+    .status {
+      font-weight: 700;
+      font-size: 1.3em;
+      color: var(--accent-purple);
+      margin-top: 8px;
+    }
+
+    .input-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      margin-bottom: 14px;
+    }
+
+    .input-row {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+    }
+
+    label {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      font-weight: 600;
+    }
+
+    input[type="password"], 
+    input[type="number"] {
+      padding: 10px 14px;
+      background: var(--input-bg);
+      border: 1.5px solid var(--border-color);
+      color: var(--text-main);
+      border-radius: 12px;
+      font-size: 0.95rem;
+      width: 100%;
+      box-sizing: border-box;
+      outline: none;
+      transition: all 0.2s ease;
+      font-family: inherit;
+    }
+
+    input[type="password"]:focus, 
+    input[type="number"]:focus {
+      border-color: var(--accent-btn);
+    }
+
+    button {
+      padding: 11px 16px;
+      background: var(--accent-btn);
+      color: #fff;
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      font-size: 0.9rem;
+      font-weight: 700;
+      transition: all 0.2s ease;
+      font-family: inherit;
+    }
+
+    button:hover {
+      background: var(--btn-hover);
+      transform: translateY(-1px);
+    }
+
+    button:active {
+      transform: scale(0.98);
+    }
+
+    .btn-secondary {
+      background: var(--input-bg);
+      color: var(--text-main);
+      border: 1px solid var(--border-color);
+    }
+
+    .btn-secondary:hover {
+      background: var(--border-color);
+    }
+
+    .actions {
+      display: flex;
+      gap: 10px;
+    }
   </style>
 </head>
 <body>
 
-  <h1>Torn City - Monitor de Barras</h1>
+  <div class="header-container">
+    <h1>✨ Torn Monitor</h1>
+    <button class="theme-toggle" onclick="toggleTheme()" id="themeBtn">🌙 Modo Escuro</button>
+  </div>
 
   <!-- Configurações do Usuário -->
   <div class="card">
@@ -197,6 +248,32 @@
 
   <script>
     let energyInterval, nerveInterval;
+
+    // --- CONTROLE DE TEMA (CLARO / ESCURO) ---
+    function initTheme() {
+      const savedTheme = localStorage.getItem('torn_theme') || 'light';
+      document.documentElement.setAttribute('data-theme', savedTheme);
+      updateThemeButton(savedTheme);
+    }
+  
+    function toggleTheme() {
+      const currentTheme = document.documentElement.getAttribute('data-theme');
+      const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+      
+      document.documentElement.setAttribute('data-theme', newTheme);
+      localStorage.setItem('torn_theme', newTheme);
+      updateThemeButton(newTheme);
+    }
+  
+    function updateThemeButton(theme) {
+      const btn = document.getElementById('themeBtn');
+      if (btn) {
+        btn.innerText = theme === 'dark' ? '🌸 Modo Claro' : '🌙 Modo Escuro';
+      }
+    }
+  
+    // Chame a inicialização do tema assim que a página carregar
+    window.addEventListener('DOMContentLoaded', initTheme);
 
     // --- CARREGAMENTO INICIAL ---
     window.onload = () => {
