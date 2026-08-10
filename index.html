@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Torn City - Bar Monitor & Alarmes</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #121212;
+      color: #e0e0e0;
+      padding: 20px;
+      max-width: 500px;
+      margin: 0 auto;
+    }
+    h1 {
+      font-size: 1.5rem;
+      text-align: center;
+      color: #fff;
+    }
+    .card {
+      background: #1e1e1e;
+      padding: 15px 20px;
+      margin-bottom: 15px;
+      border-radius: 8px;
+      border: 1px solid #333;
+    }
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .status {
+      font-weight: bold;
+      font-size: 1.3em;
+      color: #4caf50;
+      margin-top: 5px;
+    }
+    .input-group {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-bottom: 20px;
+    }
+    input[type="password"], input[type="text"] {
+      padding: 10px;
+      background: #2a2a2a;
+      border: 1px solid #444;
+      color: #fff;
+      border-radius: 4px;
+      font-size: 1rem;
+    }
+    button {
+      padding: 10px 15px;
+      background: #007bff;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-weight: bold;
+      transition: background 0.2s;
+    }
+    button:hover {
+      background: #0056b3;
+    }
+    .btn-secondary {
+      background: #6c757d;
+    }
+    .btn-secondary:hover {
+      background: #5a6268;
+    }
+    .actions {
+      display: flex;
+      gap: 10px;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Torn City - Monitor de Barras</h1>
+
+  <!-- Gerenciamento da API Key -->
+  <div class="card">
+    <div class="input-group">
+      <label for="apiKey">Sua API Key do Torn:</label>
+      <input type="password" id="apiKey" placeholder="Cole sua API Key aqui..." />
+      <div class="actions">
+        <button onclick="saveApiKey()" style="flex: 1;">Salvar Chave</button>
+        <button onclick="clearApiKey()" class="btn-secondary">Remover</button>
+      </div>
+    </div>
+    <button onclick="requestNotificationPermission()" class="btn-secondary" style="width: 100%;">
+      🔔 Ativar Notificações do Navegador
+    </button>
+  </div>
+
+  <button onclick="fetchBars()" style="width: 100%; margin-bottom: 20px;">⚡ Atualizar Dados Agora</button>
+
+  <!-- Dashboard de Barras -->
+  <div id="dashboard">
+    <div class="card">
+      <div class="card-header">
+        <h3>⚡ Energy</h3>
+        <span id="energy-val">- / -</span>
+      </div>
+      <div id="energy-timer" class="status">--:--:--</div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <h3>👊 Nerve</h3>
+        <span id="nerve-val">- / -</span>
+      </div>
+      <div id="nerve-timer" class="status">--:--:--</div>
+    </div>
+  </div>
+
+  <script>
+    let energyInterval, nerveInterval;
+
+    // --- CARREGAMENTO INICIAL ---
+    window.onload = () => {
+      const savedKey = localStorage.getItem('torn_api_key');
+      if (savedKey) {
+        document.getElementById('apiKey').value = savedKey;
+        fetchBars();
+      }
+    };
+
+    // --- MANIPULAÇÃO DO LOCALSTORAGE ---
+    function saveApiKey() {
+      const key = document.getElementById('apiKey').value.trim();
+      if (!key) {
+        alert('Por favor, digite uma API Key válida.');
+        return;
+      }
+      localStorage.setItem('torn_api_key', key);
+      alert('API Key salva localmente com sucesso!');
+      fetchBars();
+    }
+
+    function clearApiKey() {
+      localStorage.removeItem('torn_api_key');
+      document.getElementById('apiKey').value = '';
+      alert('API Key removida!');
+    }
+
+    // --- NOTIFICAÇÕES & ALARMES ---
+    function requestNotificationPermission() {
+      if (!('Notification' in window)) {
+        alert('Este navegador não suporta notificações de trabalho.');
+        return;
+      }
+      Notification.requestPermission().then(permission => {
+        if (permission === 'granted') {
+          alert('Notificações ativadas com sucesso!');
+        } else {
+          alert('Permissão de notificação negada.');
+        }
+      });
+    }
+
+    function sendAlert(title, message) {
+      // 1. Toca o som de aviso em áudio sintetizado
+      playBeep();
+
+      // 2. Dispara Notificação do Navegador (se permitida)
+      if ('Notification' in window && Notification.permission === 'granted') {
+        new Notification(title, {
+          body: message,
+          icon: 'https://www.torn.com/favicon.ico'
+        });
+      } else {
+        alert(`${title}: ${message}`);
+      }
+    }
+
+    function playBeep() {
+      try {
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(880, audioCtx.currentTime);
+        osc.start();
+        osc.stop(audioCtx.currentTime + 1.2);
+      } catch (e) {
+        console.log('Erro ao tocar áudio automático:', e);
+      }
+    }
+
+    // --- TEMPORIZADOR ---
+    function formatTime(seconds) {
+      if (seconds <= 0) return "CHEIA!";
+      const h = Math.floor(seconds / 3600).toString().padStart(2, '0');
+      const m = Math.floor((seconds % 3600) / 60).toString().padStart(2, '0');
+      const s = (seconds % 60).toString().padStart(2, '0');
+      return `${h}:${m}:${s}`;
+    }
+
+    function startCountdown(elementId, initialSeconds, onComplete) {
+      let remaining = initialSeconds;
+      const element = document.getElementById(elementId);
+      
+      element.innerText = formatTime(remaining);
+
+      return setInterval(() => {
+        remaining--;
+        element.innerText = formatTime(remaining);
+
+        if (remaining <= 0) {
+          onComplete();
+        }
+      }, 1000);
+    }
+
+    // --- REQUISIÇÃO À API ---
+    async function fetchBars() {
+      const apiKey = localStorage.getItem('torn_api_key') || document.getElementById('apiKey').value.trim();
+
+      if (!apiKey) {
+        alert('Por favor, insira e salve sua API Key primeiro.');
+        return;
+      }
+
+      // Limpa os intervalos anteriores antes de recalcular
+      clearInterval(energyInterval);
+      clearInterval(nerveInterval);
+
+      try {
+        const response = await fetch('https://api.torn.com/v2/user/bars', {
+          headers: {
+            'Accept': 'application/json',
+            'Authorization': `ApiKey ${apiKey}`
+          }
+        });
+
+        const data = await response.json();
+
+        if (data.error) {
+          alert(`Erro na API do Torn: ${data.error.error || 'Chave inválida'}`);
+          return;
+        }
+
+        const bars = data.bars;
+
+        // --- ENERGY ---
+        document.getElementById('energy-val').innerText = `${bars.energy.current} / ${bars.energy.maximum}`;
+        if (bars.energy.full_time > 0) {
+          energyInterval = startCountdown('energy-timer', bars.energy.full_time, () => {
+            clearInterval(energyInterval);
+            sendAlert('⚡ Energy Recarregada!', 'Sua barra de Energy atingiu o máximo no Torn City.');
+          });
+        } else {
+          document.getElementById('energy-timer').innerText = "CHEIA!";
+        }
+
+        // --- NERVE ---
+        document.getElementById('nerve-val').innerText = `${bars.nerve.current} / ${bars.nerve.maximum}`;
+        if (bars.nerve.full_time > 0) {
+          nerveInterval = startCountdown('nerve-timer', bars.nerve.full_time, () => {
+            clearInterval(nerveInterval);
+            sendAlert('👊 Nerve Recarregado!', 'Sua barra de Nerve atingiu o máximo no Torn City.');
+          });
+        } else {
+          document.getElementById('nerve-timer').innerText = "CHEIA!";
+        }
+
+      } catch (err) {
+        console.error("Erro na busca:", err);
+        alert("Erro ao conectar com a API do Torn.");
+      }
+    }
+  </script>
+</body>
+</html>
