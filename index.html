@@ -415,22 +415,37 @@
     }
 
     function startCountdown(elementId, initialSeconds, onComplete) {
-      let remaining = initialSeconds;
       const element = document.getElementById(elementId);
-      
       element.classList.remove('done');
-      element.innerText = formatTime(remaining);
 
-      return setInterval(() => {
-        remaining--;
+      // TIMESTAMP FIX: Calcula a hora exata em milissegundos na qual o temporizador DEVE terminar
+      const endTime = Date.now() + (initialSeconds * 1000);
+
+      const updateTimer = () => {
+        // Quantos segundos realmente faltam até essa hora final
+        const remaining = Math.round((endTime - Date.now()) / 1000);
+
         if (remaining <= 0) {
           element.innerText = 'TARGET REACHED!';
           element.classList.add('done');
           onComplete();
+          return true; // Finalizado
         } else {
           element.innerText = formatTime(remaining);
+          return false; // Em andamento
+        }
+      };
+
+      // Executa a primeira verificação no momento do disparo
+      if (updateTimer()) return null;
+
+      const intervalId = setInterval(() => {
+        if (updateTimer()) {
+          clearInterval(intervalId);
         }
       }, 1000);
+
+      return intervalId;
     }
 
     // --- API FETCH ---
@@ -447,8 +462,8 @@
       const refreshBtn = document.getElementById('refreshBtn');
       refreshBtn.innerText = 'Refreshing...';
 
-      clearInterval(energyInterval);
-      clearInterval(nerveInterval);
+      if (energyInterval) clearInterval(energyInterval);
+      if (nerveInterval) clearInterval(nerveInterval);
 
       try {
         const response = await fetch('https://api.torn.com/v2/user/bars', {
@@ -476,7 +491,7 @@
         const energyElem = document.getElementById('energy-timer');
         if (energyTime > 0) {
           energyInterval = startCountdown('energy-timer', energyTime, () => {
-            clearInterval(energyInterval);
+            if (energyInterval) clearInterval(energyInterval);
             sendAlert('⚡ Energy Ready!', `Your Energy reached your target (${energyGoalText})!`);
           });
         } else {
@@ -492,7 +507,7 @@
         const nerveElem = document.getElementById('nerve-timer');
         if (nerveTime > 0) {
           nerveInterval = startCountdown('nerve-timer', nerveTime, () => {
-            clearInterval(nerveInterval);
+            if (nerveInterval) clearInterval(nerveInterval);
             sendAlert('👊 Nerve Ready!', `Your Nerve reached your target (${nerveGoalText})!`);
           });
         } else {
