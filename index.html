@@ -1,48 +1,50 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Torn City - Bar Monitor & Alarmes</title>
+  <title>Torn City - Bar Monitor & Alarms</title>
   <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@500;600;700&display=swap" rel="stylesheet">
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@500;600;700&display=swap');
-
-    /* Palette - Modo Claro (Soft Pink & Lilac) */
+    /* Palette - Light Mode (Soft Pink & Lilac) */
     :root {
       --bg: #fff5f8;
       --card-bg: #ffffff;
       --text-main: #5b4656;
       --text-muted: #a38c9d;
       --accent-pink: #ffb7c5;
-      --accent-purple: #cbb4d5;
+      --accent-purple: #9c84bc;
       --accent-btn: #e8a7bd;
       --btn-hover: #df93ab;
       --border-color: #f7dbe4;
-      --shadow: 0 8px 20px rgba(232, 167, 189, 0.15);
+      --shadow: 0 8px 24px rgba(232, 167, 189, 0.18);
       --input-bg: #fff9fc;
+      --badge-bg: #e8f5e9;
+      --badge-text: #2e7d32;
     }
 
-    /* Palette - Modo Escuro (Cute Night) */
+    /* Palette - Dark Mode (Cute Night) */
     [data-theme="dark"] {
       --bg: #1f1822;
       --card-bg: #2a212e;
       --text-main: #f5eaf2;
       --text-muted: #ba9ebb;
       --accent-pink: #e295aa;
-      --accent-purple: #b392c0;
+      --accent-purple: #c5a9d8;
       --accent-btn: #b07289;
       --btn-hover: #9c6076;
       --border-color: #3d2f43;
-      --shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+      --shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
       --input-bg: #241c27;
+      --badge-bg: #1b382b;
+      --badge-text: #81c784;
     }
 
     body {
       font-family: 'Quicksand', 'Segoe UI', sans-serif;
       background: var(--bg);
       color: var(--text-main);
-      padding: 30px 20px;
+      padding: 32px 20px;
       max-width: 440px;
       margin: 0 auto;
       transition: background 0.3s ease, color 0.3s ease;
@@ -52,11 +54,11 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 20px;
+      margin-bottom: 24px;
     }
 
     h1 {
-      font-size: 1.35rem;
+      font-size: 1.4rem;
       font-weight: 700;
       color: var(--text-main);
       margin: 0;
@@ -67,7 +69,7 @@
       background: var(--card-bg);
       border: 1px solid var(--border-color);
       color: var(--text-main);
-      padding: 6px 12px;
+      padding: 6px 14px;
       border-radius: 20px;
       cursor: pointer;
       font-size: 0.85rem;
@@ -82,9 +84,9 @@
 
     .card {
       background: var(--card-bg);
-      padding: 20px;
-      margin-bottom: 16px;
-      border-radius: 20px;
+      padding: 22px;
+      margin-bottom: 18px;
+      border-radius: 24px;
       border: 1px solid var(--border-color);
       box-shadow: var(--shadow);
       transition: background 0.3s ease, border-color 0.3s ease;
@@ -98,29 +100,50 @@
 
     .card-header h3 {
       margin: 0;
-      font-size: 1.05rem;
+      font-size: 1.1rem;
       font-weight: 700;
       color: var(--text-main);
     }
 
+    .bar-val {
+      font-weight: 600;
+      font-size: 0.95rem;
+      color: var(--text-muted);
+    }
+
     .status {
       font-weight: 700;
-      font-size: 1.3em;
+      font-size: 1.4em;
       color: var(--accent-purple);
-      margin-top: 8px;
+      margin-top: 10px;
+      letter-spacing: 0.5px;
+    }
+
+    .status.done {
+      display: inline-block;
+      font-size: 0.85rem;
+      background: var(--badge-bg);
+      color: var(--badge-text);
+      padding: 4px 12px;
+      border-radius: 12px;
+      margin-top: 10px;
     }
 
     .input-group {
       display: flex;
       flex-direction: column;
       gap: 6px;
-      margin-bottom: 14px;
+      margin-bottom: 16px;
     }
 
     .input-row {
       display: flex;
       gap: 12px;
       align-items: center;
+    }
+
+    .input-row > div {
+      flex: 1;
     }
 
     label {
@@ -135,7 +158,7 @@
       background: var(--input-bg);
       border: 1.5px solid var(--border-color);
       color: var(--text-main);
-      border-radius: 12px;
+      border-radius: 14px;
       font-size: 0.95rem;
       width: 100%;
       box-sizing: border-box;
@@ -150,11 +173,11 @@
     }
 
     button {
-      padding: 11px 16px;
+      padding: 12px 16px;
       background: var(--accent-btn);
       color: #fff;
       border: none;
-      border-radius: 12px;
+      border-radius: 14px;
       cursor: pointer;
       font-size: 0.9rem;
       font-weight: 700;
@@ -185,24 +208,30 @@
       display: flex;
       gap: 10px;
     }
+
+    .refresh-btn {
+      width: 100%;
+      margin-bottom: 20px;
+      box-shadow: var(--shadow);
+    }
   </style>
 </head>
 <body>
 
   <div class="header-container">
     <h1>✨ Torn Monitor</h1>
-    <button class="theme-toggle" onclick="toggleTheme()" id="themeBtn">🌙 Modo Escuro</button>
+    <button class="theme-toggle" onclick="toggleTheme()" id="themeBtn">🌙 Dark Mode</button>
   </div>
 
-  <!-- Configurações do Usuário -->
+  <!-- User Settings -->
   <div class="card">
     <div class="input-group">
-      <label for="apiKey">API Key do Torn:</label>
-      <input type="password" id="apiKey" placeholder="Cole sua API Key aqui..." />
+      <label for="apiKey">Torn API Key:</label>
+      <input type="password" id="apiKey" placeholder="Paste your API Key here..." />
     </div>
 
     <div class="input-group">
-      <label>Alertar quando atingir:</label>
+      <label>Notify me when reaching:</label>
       <div class="input-row">
         <div>
           <label for="targetEnergy">⚡ Energy:</label>
@@ -216,23 +245,23 @@
     </div>
 
     <div class="actions">
-      <button onclick="saveSettings()" style="flex: 1;">Salvar Configurações</button>
-      <button onclick="clearSettings()" class="btn-secondary">Limpar</button>
+      <button onclick="saveSettings()" style="flex: 1;">Save Settings</button>
+      <button onclick="clearSettings()" class="btn-secondary">Clear</button>
     </div>
 
     <button onclick="requestNotificationPermission()" class="btn-secondary" style="width: 100%; margin-top: 10px;">
-      🔔 Ativar Notificações do Navegador
+      🔔 Enable Browser Notifications
     </button>
   </div>
 
-  <button onclick="fetchBars()" style="width: 100%; margin-bottom: 20px;">⚡ Atualizar Dados Agora</button>
+  <button onclick="fetchBars()" class="refresh-btn" id="refreshBtn">⚡ Refresh Bars</button>
 
-  <!-- Dashboard de Barras -->
+  <!-- Bars Dashboard -->
   <div id="dashboard">
     <div class="card">
       <div class="card-header">
         <h3>⚡ Energy</h3>
-        <span id="energy-val">- / -</span>
+        <span id="energy-val" class="bar-val">- / -</span>
       </div>
       <div id="energy-timer" class="status">--:--:--</div>
     </div>
@@ -240,7 +269,7 @@
     <div class="card">
       <div class="card-header">
         <h3>👊 Nerve</h3>
-        <span id="nerve-val">- / -</span>
+        <span id="nerve-val" class="bar-val">- / -</span>
       </div>
       <div id="nerve-timer" class="status">--:--:--</div>
     </div>
@@ -249,7 +278,7 @@
   <script>
     let energyInterval, nerveInterval;
 
-    // --- CONTROLE DE TEMA (CLARO / ESCURO) ---
+    // --- THEME CONTROL (LIGHT / DARK) ---
     function initTheme() {
       const savedTheme = localStorage.getItem('torn_theme') || 'light';
       document.documentElement.setAttribute('data-theme', savedTheme);
@@ -268,15 +297,14 @@
     function updateThemeButton(theme) {
       const btn = document.getElementById('themeBtn');
       if (btn) {
-        btn.innerText = theme === 'dark' ? '🌸 Modo Claro' : '🌙 Modo Escuro';
+        btn.innerText = theme === 'dark' ? '🌸 Light Mode' : '🌙 Dark Mode';
       }
     }
-  
-    // Chame a inicialização do tema assim que a página carregar
-    window.addEventListener('DOMContentLoaded', initTheme);
 
-    // --- CARREGAMENTO INICIAL ---
+    // --- INITIAL LOAD ---
     window.onload = () => {
+      initTheme();
+
       const savedKey = localStorage.getItem('torn_api_key');
       const savedEnergy = localStorage.getItem('torn_target_energy');
       const savedNerve = localStorage.getItem('torn_target_nerve');
@@ -288,14 +316,14 @@
       if (savedKey) fetchBars();
     };
 
-    // --- MANIPULAÇÃO DO LOCALSTORAGE ---
+    // --- LOCALSTORAGE HANDLER ---
     function saveSettings() {
       const key = document.getElementById('apiKey').value.trim();
       const energy = document.getElementById('targetEnergy').value;
       const nerve = document.getElementById('targetNerve').value;
 
       if (!key) {
-        alert('Por favor, digite uma API Key válida.');
+        alert('Please enter a valid API Key.');
         return;
       }
 
@@ -306,7 +334,7 @@
       if (nerve) localStorage.setItem('torn_target_nerve', nerve);
       else localStorage.removeItem('torn_target_nerve');
 
-      alert('Configurações salvas com sucesso!');
+      alert('Settings saved successfully!');
       fetchBars();
     }
 
@@ -318,20 +346,20 @@
       document.getElementById('apiKey').value = '';
       document.getElementById('targetEnergy').value = '';
       document.getElementById('targetNerve').value = '';
-      alert('Configurações removidas!');
+      alert('Settings cleared!');
     }
 
-    // --- NOTIFICAÇÕES & ALARMES ---
+    // --- NOTIFICATIONS & ALARMS ---
     function requestNotificationPermission() {
       if (!('Notification' in window)) {
-        alert('Este navegador não suporta notificações de trabalho.');
+        alert('This browser does not support desktop notifications.');
         return;
       }
       Notification.requestPermission().then(permission => {
         if (permission === 'granted') {
-          alert('Notificações ativadas com sucesso!');
+          alert('Notifications enabled successfully!');
         } else {
-          alert('Permissão de notificação negada.');
+          alert('Notification permission denied.');
         }
       });
     }
@@ -361,13 +389,13 @@
         osc.start();
         osc.stop(audioCtx.currentTime + 1.2);
       } catch (e) {
-        console.log('Erro ao tocar áudio automático:', e);
+        console.log('Audio playback error:', e);
       }
     }
 
-    // --- TEMPORIZADOR E CÁLCULO ---
+    // --- TIMER AND CALCULATIONS ---
     function formatTime(seconds) {
-      if (seconds <= 0) return "ALVO ATINGIDO!";
+      if (seconds <= 0) return 0;
       const h = Math.floor(seconds / 3600).toString().padStart(2, '0');
       const m = Math.floor((seconds % 3600) / 60).toString().padStart(2, '0');
       const s = (seconds % 60).toString().padStart(2, '0');
@@ -378,15 +406,11 @@
       const current = bar.current;
       const target = targetValue ? parseInt(targetValue, 10) : bar.maximum;
 
-      // Se já passou ou está no alvo
       if (current >= target) return 0;
 
-      // Quantos pontos faltam
       const needed = target - current;
-      // Quantos ticks são necessários
       const ticksNeeded = Math.ceil(needed / bar.increment);
 
-      // Tempo total = (ticks restantes - 1) * intervalo + tempo até o próximo tick
       return ((ticksNeeded - 1) * bar.interval) + bar.tick_time;
     }
 
@@ -394,28 +418,34 @@
       let remaining = initialSeconds;
       const element = document.getElementById(elementId);
       
+      element.classList.remove('done');
       element.innerText = formatTime(remaining);
 
       return setInterval(() => {
         remaining--;
-        element.innerText = formatTime(remaining);
-
         if (remaining <= 0) {
+          element.innerText = 'TARGET REACHED!';
+          element.classList.add('done');
           onComplete();
+        } else {
+          element.innerText = formatTime(remaining);
         }
       }, 1000);
     }
 
-    // --- REQUISIÇÃO À API ---
+    // --- API FETCH ---
     async function fetchBars() {
       const apiKey = localStorage.getItem('torn_api_key') || document.getElementById('apiKey').value.trim();
       const targetEnergy = localStorage.getItem('torn_target_energy') || document.getElementById('targetEnergy').value;
       const targetNerve = localStorage.getItem('torn_target_nerve') || document.getElementById('targetNerve').value;
 
       if (!apiKey) {
-        alert('Por favor, insira e salve sua API Key primeiro.');
+        alert('Please enter and save your API Key first.');
         return;
       }
+
+      const refreshBtn = document.getElementById('refreshBtn');
+      refreshBtn.innerText = 'Refreshing...';
 
       clearInterval(energyInterval);
       clearInterval(nerveInterval);
@@ -431,7 +461,8 @@
         const data = await response.json();
 
         if (data.error) {
-          alert(`Erro na API do Torn: ${data.error.error || 'Chave inválida'}`);
+          alert(`Torn API Error: ${data.error.error || 'Invalid API Key'}`);
+          refreshBtn.innerText = '⚡ Refresh Bars';
           return;
         }
 
@@ -440,34 +471,40 @@
         // --- ENERGY ---
         document.getElementById('energy-val').innerText = `${bars.energy.current} / ${bars.energy.maximum}`;
         const energyTime = calculateSecondsToTarget(bars.energy, targetEnergy);
-        const energyGoalText = targetEnergy ? targetEnergy : 'máximo';
+        const energyGoalText = targetEnergy ? targetEnergy : 'max';
 
+        const energyElem = document.getElementById('energy-timer');
         if (energyTime > 0) {
           energyInterval = startCountdown('energy-timer', energyTime, () => {
             clearInterval(energyInterval);
-            sendAlert('⚡ Energy Pronta!', `Sua Energy atingiu a meta configurada (${energyGoalText})!`);
+            sendAlert('⚡ Energy Ready!', `Your Energy reached your target (${energyGoalText})!`);
           });
         } else {
-          document.getElementById('energy-timer').innerText = "ALVO ATINGIDO!";
+          energyElem.innerText = 'TARGET REACHED!';
+          energyElem.classList.add('done');
         }
 
         // --- NERVE ---
         document.getElementById('nerve-val').innerText = `${bars.nerve.current} / ${bars.nerve.maximum}`;
         const nerveTime = calculateSecondsToTarget(bars.nerve, targetNerve);
-        const nerveGoalText = targetNerve ? targetNerve : 'máximo';
+        const nerveGoalText = targetNerve ? targetNerve : 'max';
 
+        const nerveElem = document.getElementById('nerve-timer');
         if (nerveTime > 0) {
           nerveInterval = startCountdown('nerve-timer', nerveTime, () => {
             clearInterval(nerveInterval);
-            sendAlert('👊 Nerve Pronto!', `Seu Nerve atingiu a meta configurada (${nerveGoalText})!`);
+            sendAlert('👊 Nerve Ready!', `Your Nerve reached your target (${nerveGoalText})!`);
           });
         } else {
-          document.getElementById('nerve-timer').innerText = "ALVO ATINGIDO!";
+          nerveElem.innerText = 'TARGET REACHED!';
+          nerveElem.classList.add('done');
         }
 
       } catch (err) {
-        console.error("Erro na busca:", err);
-        alert("Erro ao conectar com a API do Torn.");
+        console.error("Fetch error:", err);
+        alert("Failed to connect to Torn API.");
+      } finally {
+        refreshBtn.innerText = '⚡ Refresh Bars';
       }
     }
   </script>
