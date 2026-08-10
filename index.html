@@ -153,7 +153,8 @@
     }
 
     input[type="password"], 
-    input[type="number"] {
+    input[type="number"],
+    select {
       padding: 10px 14px;
       background: var(--input-bg);
       border: 1.5px solid var(--border-color);
@@ -168,7 +169,8 @@
     }
 
     input[type="password"]:focus, 
-    input[type="number"]:focus {
+    input[type="number"]:focus,
+    select:focus {
       border-color: var(--accent-btn);
     }
 
@@ -244,6 +246,16 @@
       </div>
     </div>
 
+    <div class="input-group">
+      <label for="autoRefreshInterval">🔄 Auto-Sync Frequency:</label>
+      <select id="autoRefreshInterval">
+        <option value="30">Every 30 seconds</option>
+        <option value="60" selected>Every 1 minute</option>
+        <option value="120">Every 2 minutes</option>
+        <option value="300">Every 5 minutes</option>
+      </select>
+    </div>
+
     <div class="actions">
       <button onclick="saveSettings()" style="flex: 1;">Save Settings</button>
       <button onclick="clearSettings()" class="btn-secondary">Clear</button>
@@ -276,7 +288,7 @@
   </div>
 
   <script>
-    let energyInterval, nerveInterval;
+    let energyInterval, nerveInterval, autoSyncInterval;
 
     // --- THEME CONTROL (LIGHT / DARK) ---
     function initTheme() {
@@ -308,19 +320,43 @@
       const savedKey = localStorage.getItem('torn_api_key');
       const savedEnergy = localStorage.getItem('torn_target_energy');
       const savedNerve = localStorage.getItem('torn_target_nerve');
+      const savedInterval = localStorage.getItem('torn_sync_interval') || "60";
 
       if (savedKey) document.getElementById('apiKey').value = savedKey;
       if (savedEnergy) document.getElementById('targetEnergy').value = savedEnergy;
       if (savedNerve) document.getElementById('targetNerve').value = savedNerve;
+      document.getElementById('autoRefreshInterval').value = savedInterval;
 
-      if (savedKey) fetchBars();
+      if (savedKey) {
+        fetchBars();
+        setupAutoSync();
+      }
     };
+
+    // --- AUTOMATIC REFRESH SETUP ---
+    function setupAutoSync() {
+      if (autoSyncInterval) clearInterval(autoSyncInterval);
+
+      const seconds = parseInt(localStorage.getItem('torn_sync_interval') || "60", 10);
+      autoSyncInterval = setInterval(() => {
+        fetchBars(true); // Chamada silenciosa em segundo plano
+      }, seconds * 1000);
+    }
+
+    // Sincroniza imediatamente se você voltar para esta aba
+    document.addEventListener('visibilitychange', () => {
+      if (!document.hidden) {
+        const savedKey = localStorage.getItem('torn_api_key');
+        if (savedKey) fetchBars(true);
+      }
+    });
 
     // --- LOCALSTORAGE HANDLER ---
     function saveSettings() {
       const key = document.getElementById('apiKey').value.trim();
       const energy = document.getElementById('targetEnergy').value;
       const nerve = document.getElementById('targetNerve').value;
+      const syncInterval = document.getElementById('autoRefreshInterval').value;
 
       if (!key) {
         alert('Please enter a valid API Key.');
@@ -328,6 +364,8 @@
       }
 
       localStorage.setItem('torn_api_key', key);
+      localStorage.setItem('torn_sync_interval', syncInterval);
+
       if (energy) localStorage.setItem('torn_target_energy', energy);
       else localStorage.removeItem('torn_target_energy');
 
@@ -336,12 +374,15 @@
 
       alert('Settings saved successfully!');
       fetchBars();
+      setupAutoSync();
     }
 
     function clearSettings() {
+      if (autoSyncInterval) clearInterval(autoSyncInterval);
       localStorage.removeItem('torn_api_key');
       localStorage.removeItem('torn_target_energy');
       localStorage.removeItem('torn_target_nerve');
+      localStorage.removeItem('torn_sync_interval');
 
       document.getElementById('apiKey').value = '';
       document.getElementById('targetEnergy').value = '';
@@ -418,25 +459,22 @@
       const element = document.getElementById(elementId);
       element.classList.remove('done');
 
-      // TIMESTAMP FIX: Calcula a hora exata em milissegundos na qual o temporizador DEVE terminar
       const endTime = Date.now() + (initialSeconds * 1000);
 
       const updateTimer = () => {
-        // Quantos segundos realmente faltam até essa hora final
         const remaining = Math.round((endTime - Date.now()) / 1000);
 
         if (remaining <= 0) {
           element.innerText = 'TARGET REACHED!';
           element.classList.add('done');
           onComplete();
-          return true; // Finalizado
+          return true;
         } else {
           element.innerText = formatTime(remaining);
-          return false; // Em andamento
+          return false;
         }
       };
 
-      // Executa a primeira verificação no momento do disparo
       if (updateTimer()) return null;
 
       const intervalId = setInterval(() => {
@@ -449,21 +487,18 @@
     }
 
     // --- API FETCH ---
-    async function fetchBars() {
+    async function fetchBars(isBackground = false) {
       const apiKey = localStorage.getItem('torn_api_key') || document.getElementById('apiKey').value.trim();
       const targetEnergy = localStorage.getItem('torn_target_energy') || document.getElementById('targetEnergy').value;
       const targetNerve = localStorage.getItem('torn_target_nerve') || document.getElementById('targetNerve').value;
 
       if (!apiKey) {
-        alert('Please enter and save your API Key first.');
+        if (!isBackground) alert('Please enter and save your API Key first.');
         return;
       }
 
       const refreshBtn = document.getElementById('refreshBtn');
-      refreshBtn.innerText = 'Refreshing...';
-
-      if (energyInterval) clearInterval(energyInterval);
-      if (nerveInterval) clearInterval(nerveInterval);
+      if (!isBackground) refreshBtn.innerText = 'Refreshing...';
 
       try {
         const response = await fetch('https://api.torn.com/v2/user/bars', {
@@ -476,8 +511,7 @@
         const data = await response.json();
 
         if (data.error) {
-          alert(`Torn API Error: ${data.error.error || 'Invalid API Key'}`);
-          refreshBtn.innerText = '⚡ Refresh Bars';
+          if (!isBackground) alert(`Torn API Error: ${data.error.error || 'Invalid API Key'}`);
           return;
         }
 
@@ -487,8 +521,11 @@
         document.getElementById('energy-val').innerText = `${bars.energy.current} / ${bars.energy.maximum}`;
         const energyTime = calculateSecondsToTarget(bars.energy, targetEnergy);
         const energyGoalText = targetEnergy ? targetEnergy : 'max';
-
         const energyElem = document.getElementById('energy-timer');
+
+        // Sempre reinicia o cronômetro para ajustar caso o valor atual tenha mudado
+        if (energyInterval) clearInterval(energyInterval);
+
         if (energyTime > 0) {
           energyInterval = startCountdown('energy-timer', energyTime, () => {
             if (energyInterval) clearInterval(energyInterval);
@@ -503,8 +540,10 @@
         document.getElementById('nerve-val').innerText = `${bars.nerve.current} / ${bars.nerve.maximum}`;
         const nerveTime = calculateSecondsToTarget(bars.nerve, targetNerve);
         const nerveGoalText = targetNerve ? targetNerve : 'max';
-
         const nerveElem = document.getElementById('nerve-timer');
+
+        if (nerveInterval) clearInterval(nerveInterval);
+
         if (nerveTime > 0) {
           nerveInterval = startCountdown('nerve-timer', nerveTime, () => {
             if (nerveInterval) clearInterval(nerveInterval);
@@ -517,7 +556,6 @@
 
       } catch (err) {
         console.error("Fetch error:", err);
-        alert("Failed to connect to Torn API.");
       } finally {
         refreshBtn.innerText = '⚡ Refresh Bars';
       }
