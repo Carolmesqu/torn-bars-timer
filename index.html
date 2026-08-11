@@ -235,6 +235,7 @@
       opacity: 0.7;
       animation: float-anim var(--duration, 6s) ease-in-out infinite;
       animation-delay: var(--delay, 0s);
+      filter: drop-shadow(0 0 6px var(--accent-purple));
     }
 
     @keyframes float-anim {
@@ -293,6 +294,21 @@
       --delay: 4s;
       --rotate: 4deg;
       opacity: 0.3;
+    }
+
+    /* Drug Alert Animation */
+    .drug-alert {
+      animation: drug-alert-anim var(--duration, 6s) infinite ease-in-out !important;
+      filter: drop-shadow(0 0 12px var(--accent-pink));
+    }
+
+    @keyframes drug-alert-anim {
+      0%, 100% {
+        transform: translateY(0) rotate(var(--rotate, 5deg)) scale(1);
+      }
+      50% {
+        transform: translateY(-20px) rotate(var(--rotate, 5deg)) scale(1.15);
+      }
     }
 
     /* Toast Notification */
@@ -841,10 +857,23 @@
         const drugTime = cooldowns.drug;
         const drugElem = document.getElementById('drug-timer');
         document.getElementById('drug-val').innerText = drugTime > 0 ? 'Active' : 'Ready';
-        const drugPct = drugTime === 0 ? 1 : 0;
+        
+        let drugPct = 0;
+        const drugIcon = document.querySelector('.el-2');
+        if (drugTime === 0) {
+          drugPct = 1;
+          if (drugIcon) drugIcon.classList.remove('drug-alert');
+        } else if (drugTime <= 3600) {
+          drugPct = 1 - (drugTime / 3600);
+          if (drugIcon) drugIcon.classList.add('drug-alert');
+        } else {
+          drugPct = 0;
+          if (drugIcon) drugIcon.classList.remove('drug-alert');
+        }
+
         const drugClipRect = document.getElementById('drug-clip-rect');
         if (drugClipRect) {
-          drugClipRect.style.transition = 'all 0.5s ease-in-out';
+          drugClipRect.style.transition = 'all 1s linear';
           const maxH = 70; const maxY = 85;
           drugClipRect.setAttribute('height', maxH * drugPct);
           drugClipRect.setAttribute('y', maxY - (maxH * drugPct));
