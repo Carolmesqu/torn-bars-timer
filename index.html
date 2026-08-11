@@ -251,8 +251,8 @@
     }
 
     .el-1 {
-      top: 10%;
-      left: 8%;
+      top: 5%;
+      left: 5%;
       width: 85px;
       --duration: 7s;
       --delay: 0s;
@@ -260,8 +260,8 @@
     }
 
     .el-2 {
-      top: 65%;
-      left: 82%;
+      top: 60%;
+      left: 80%;
       width: 95px;
       --duration: 8.5s;
       --delay: 1s;
@@ -269,8 +269,8 @@
     }
 
     .el-3 {
-      top: 25%;
-      left: 78%;
+      top: 10%;
+      left: 82%;
       width: 110px;
       --duration: 6.5s;
       --delay: 2s;
@@ -278,22 +278,49 @@
     }
 
     .el-4 {
-      top: 70%;
-      left: 12%;
-      width: 80px;
+      top: 30%;
+      left: 8%;
+      width: 85px;
       --duration: 7.2s;
       --delay: 3s;
       --rotate: -8deg;
     }
 
     .el-5 {
-      top: 40%;
-      left: 45%;
-      width: 65px;
+      top: 80%;
+      left: 10%;
+      width: 80px;
       --duration: 9s;
       --delay: 4s;
       --rotate: 4deg;
-      opacity: 0.3;
+      opacity: 0.6;
+    }
+
+    .el-6 {
+      top: 85%;
+      left: 83%;
+      width: 70px;
+      --duration: 8.2s;
+      --delay: 1.5s;
+      --rotate: -5deg;
+    }
+
+    .el-7 {
+      top: 55%;
+      left: 6%;
+      width: 95px;
+      --duration: 7.8s;
+      --delay: 2.5s;
+      --rotate: 6deg;
+    }
+
+    .el-8 {
+      top: 35%;
+      left: 85%;
+      width: 85px;
+      --duration: 6.9s;
+      --delay: 0.5s;
+      --rotate: -4deg;
     }
 
     /* Drug Alert Animation */
@@ -346,25 +373,21 @@
 
   <!-- Animated Cute Background -->
   <div class="bg-animation">
-    <!-- Floating Energy Battery -->
+    <!-- Floating Energy Lightning -->
     <svg class="floating-el el-1" viewBox="0 0 100 100">
       <defs>
         <clipPath id="energy-clip">
           <rect id="energy-clip-rect" x="0" y="90" width="100" height="0" />
         </clipPath>
       </defs>
-      <rect x="40" y="10" width="20" height="10" rx="3" fill="var(--card-bg)" stroke="var(--accent-purple)" stroke-width="5"/>
-      <rect x="25" y="20" width="50" height="70" rx="8" fill="var(--card-bg)" stroke="var(--accent-purple)" stroke-width="5"/>
+      
+      <path d="M 55,10 L 30,50 H 50 L 35,90 L 70,45 H 50 Z" fill="var(--card-bg)" stroke="var(--accent-purple)" stroke-width="5" stroke-linejoin="round"/>
       
       <g clip-path="url(#energy-clip)">
-        <rect x="40" y="10" width="20" height="10" rx="3" fill="var(--accent-pink)"/>
-        <rect x="25" y="20" width="50" height="70" rx="8" fill="var(--accent-pink)"/>
+        <path d="M 55,10 L 30,50 H 50 L 35,90 L 70,45 H 50 Z" fill="var(--accent-pink)"/>
       </g>
       
-      <rect x="40" y="10" width="20" height="10" rx="3" fill="none" stroke="var(--accent-purple)" stroke-width="5"/>
-      <rect x="25" y="20" width="50" height="70" rx="8" fill="none" stroke="var(--accent-purple)" stroke-width="5"/>
-      
-      <path d="M 55,35 l-12,18 h8 l-3,18 l14-22 h-9 z" fill="var(--accent-btn)" stroke="var(--accent-purple)" stroke-width="3" stroke-linejoin="round"/>
+      <path d="M 55,10 L 30,50 H 50 L 35,90 L 70,45 H 50 Z" fill="none" stroke="var(--accent-purple)" stroke-width="5" stroke-linejoin="round"/>
     </svg>
 
     <!-- Floating Drug Pill -->
@@ -414,18 +437,116 @@
       <circle cx="58" cy="55" r="3" fill="var(--text-main)"/>
     </svg>
     
-    <!-- Sleepy Star (Keep one original cute element) -->
-    <svg class="floating-el el-4" viewBox="0 0 100 100">
-      <path d="M50,15 l10,25 l25,5 l-20,15 l5,25 l-20,-15 l-20,15 l5,-25 l-20,-15 l25,-5 z" fill="var(--accent-btn)"
-        stroke="var(--accent-purple)" stroke-width="3" stroke-linejoin="round" />
-      <path d="M42,48 q3,-3 6,0" stroke="var(--text-main)" stroke-width="2.5" fill="none" stroke-linecap="round" />
-      <path d="M52,48 q3,-3 6,0" stroke="var(--text-main)" stroke-width="2.5" fill="none" stroke-linecap="round" />
-      <circle cx="35" cy="52" r="3" fill="var(--accent-pink)" opacity="0.6" />
-      <circle cx="59" cy="52" r="3" fill="var(--accent-pink)" opacity="0.6" />
-      <text x="75" y="30" fill="var(--accent-purple)" font-family="Quicksand, sans-serif" font-weight="bold"
-        font-size="14">Z</text>
-      <text x="85" y="15" fill="var(--accent-purple)" font-family="Quicksand, sans-serif" font-weight="bold"
-        font-size="10">z</text>
+    <!-- Floating Racing Car -->
+    <svg class="floating-el el-4" viewBox="0 0 100 100" style="width: 95px;">
+      <defs>
+        <clipPath id="racing-clip">
+          <rect id="racing-clip-rect" x="0" y="0" width="100" height="100" />
+        </clipPath>
+      </defs>
+      
+      <path d="M 15,65 Q 10,65 10,55 L 10,50 Q 10,40 25,40 L 35,25 Q 40,15 55,15 L 70,15 Q 85,15 90,35 L 95,40 Q 100,50 95,65 Z" fill="var(--card-bg)" stroke="var(--accent-purple)" stroke-width="5" stroke-linejoin="round"/>
+      
+      <g clip-path="url(#racing-clip)">
+        <path d="M 15,65 Q 10,65 10,55 L 10,50 Q 10,40 25,40 L 35,25 Q 40,15 55,15 L 70,15 Q 85,15 90,35 L 95,40 Q 100,50 95,65 Z" fill="var(--accent-pink)"/>
+      </g>
+      
+      <path d="M 15,65 Q 10,65 10,55 L 10,50 Q 10,40 25,40 L 35,25 Q 40,15 55,15 L 70,15 Q 85,15 90,35 L 95,40 Q 100,50 95,65 Z" fill="none" stroke="var(--accent-purple)" stroke-width="5" stroke-linejoin="round"/>
+      
+      <path d="M 35,40 L 40,25 Q 45,20 50,20 L 50,40 Z" fill="var(--bg)" stroke="var(--accent-purple)" stroke-width="4" stroke-linejoin="round"/>
+      <path d="M 55,40 L 55,20 L 65,20 Q 75,20 80,35 L 85,40 Z" fill="var(--bg)" stroke="var(--accent-purple)" stroke-width="4" stroke-linejoin="round"/>
+      
+      <circle cx="30" cy="65" r="12" fill="var(--card-bg)" stroke="var(--accent-purple)" stroke-width="5"/>
+      <circle cx="75" cy="65" r="12" fill="var(--card-bg)" stroke="var(--accent-purple)" stroke-width="5"/>
+      
+      <circle cx="30" cy="65" r="4" fill="var(--accent-purple)"/>
+      <circle cx="75" cy="65" r="4" fill="var(--accent-purple)"/>
+    </svg>
+
+    <!-- Floating Booster Can -->
+    <svg class="floating-el el-5" viewBox="0 0 100 100">
+      <defs>
+        <clipPath id="booster-clip">
+          <rect id="booster-clip-rect" x="0" y="0" width="100" height="100" />
+        </clipPath>
+      </defs>
+      <rect x="25" y="25" width="50" height="60" rx="6" fill="var(--card-bg)" stroke="var(--accent-purple)" stroke-width="5"/>
+      <rect x="35" y="15" width="30" height="10" rx="3" fill="var(--card-bg)" stroke="var(--accent-purple)" stroke-width="5"/>
+      <g clip-path="url(#booster-clip)">
+        <rect x="25" y="25" width="50" height="60" rx="6" fill="var(--accent-pink)"/>
+      </g>
+      <rect x="25" y="25" width="50" height="60" rx="6" fill="none" stroke="var(--accent-purple)" stroke-width="5"/>
+      <rect x="35" y="15" width="30" height="10" rx="3" fill="none" stroke="var(--accent-purple)" stroke-width="5"/>
+      <path d="M 38,55 L 50,38 L 62,55 M 50,38 V 70" fill="none" stroke="var(--accent-pink)" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+
+    <!-- Floating OC Gun -->
+    <svg class="floating-el el-6" viewBox="0 0 100 100" style="width: 85px;">
+      <defs>
+        <clipPath id="oc-clip">
+          <rect id="oc-clip-rect" x="0" y="0" width="100" height="100" />
+        </clipPath>
+      </defs>
+      
+      <!-- Trigger Guard & Base Body -->
+      <path d="M 45,52 Q 60,55 60,45" fill="none" stroke="var(--accent-purple)" stroke-width="5" stroke-linecap="round"/>
+      <line x1="53" y1="45" x2="50" y2="50" stroke="var(--accent-purple)" stroke-width="4" stroke-linecap="round"/>
+
+      <path d="M 25,75 L 40,75 L 47,45 L 85,45 A 5,5 0 0,0 90,40 L 90,30 A 5,5 0 0,0 85,25 L 25,25 A 5,5 0 0,0 20,30 L 20,45 L 34,45 Z" fill="var(--card-bg)" stroke="var(--accent-purple)" stroke-width="5" stroke-linejoin="round"/>
+      
+      <g clip-path="url(#oc-clip)">
+        <path d="M 25,75 L 40,75 L 47,45 L 85,45 A 5,5 0 0,0 90,40 L 90,30 A 5,5 0 0,0 85,25 L 25,25 A 5,5 0 0,0 20,30 L 20,45 L 34,45 Z" fill="var(--accent-pink)"/>
+      </g>
+      
+      <path d="M 25,75 L 40,75 L 47,45 L 85,45 A 5,5 0 0,0 90,40 L 90,30 A 5,5 0 0,0 85,25 L 25,25 A 5,5 0 0,0 20,30 L 20,45 L 34,45 Z" fill="none" stroke="var(--accent-purple)" stroke-width="5" stroke-linejoin="round"/>
+      
+      <!-- Slide details -->
+      <line x1="32" y1="25" x2="32" y2="45" stroke="var(--accent-purple)" stroke-width="4"/>
+      <line x1="26" y1="30" x2="26" y2="40" stroke="var(--accent-purple)" stroke-width="3" stroke-linecap="round"/>
+      
+      <!-- Front Sight -->
+      <rect x="80" y="21" width="5" height="4" fill="var(--accent-purple)"/>
+    </svg>
+
+    <!-- Floating Education Book -->
+    <svg class="floating-el el-7" viewBox="0 0 100 100">
+      <defs>
+        <clipPath id="edu-clip">
+          <rect id="edu-clip-rect" x="0" y="0" width="100" height="100" />
+        </clipPath>
+      </defs>
+      <path d="M 10,75 v-45 q0,-5 40,-5 q40,0 40,5 v45 q0,-5 -40,-5 q-40,0 -40,5" fill="var(--card-bg)" stroke="var(--accent-purple)" stroke-width="5"/>
+      <g clip-path="url(#edu-clip)">
+        <path d="M 10,75 v-45 q0,-5 40,-5 q40,0 40,5 v45 q0,-5 -40,-5 q-40,0 -40,5" fill="var(--accent-pink)"/>
+      </g>
+      <path d="M 10,75 v-45 q0,-5 40,-5 q40,0 40,5 v45 q0,-5 -40,-5 q-40,0 -40,5" fill="none" stroke="var(--accent-purple)" stroke-width="5"/>
+      <line x1="50" y1="25" x2="50" y2="70" stroke="var(--accent-purple)" stroke-width="5"/>
+      <circle cx="30" cy="45" r="4" fill="var(--accent-purple)"/>
+      <circle cx="70" cy="45" r="4" fill="var(--accent-purple)"/>
+      <path d="M 40,55 q10,10 20,0" fill="none" stroke="var(--accent-purple)" stroke-width="4" stroke-linecap="round"/>
+    </svg>
+
+    <!-- Floating Bank Money Bag -->
+    <svg class="floating-el el-8" viewBox="0 0 100 100">
+      <defs>
+        <clipPath id="bank-clip">
+          <rect id="bank-clip-rect" x="0" y="0" width="100" height="100" />
+        </clipPath>
+      </defs>
+      <path d="M 25,75 q 0,15 25,15 q 25,0 25,-15 l -5,-35 q -5,-15 -20,-15 q -15,0 -20,15 z" fill="var(--card-bg)" stroke="var(--accent-purple)" stroke-width="5" stroke-linejoin="round"/>
+      <path d="M 40,25 l -10,-15 q 20,-5 40,0 l -10,15 z" fill="var(--card-bg)" stroke="var(--accent-purple)" stroke-width="5" stroke-linejoin="round"/>
+
+      <g clip-path="url(#bank-clip)">
+        <path d="M 25,75 q 0,15 25,15 q 25,0 25,-15 l -5,-35 q -5,-15 -20,-15 q -15,0 -20,15 z" fill="var(--accent-pink)"/>
+      </g>
+      
+      <path d="M 25,75 q 0,15 25,15 q 25,0 25,-15 l -5,-35 q -5,-15 -20,-15 q -15,0 -20,15 z" fill="none" stroke="var(--accent-purple)" stroke-width="5" stroke-linejoin="round"/>
+      <path d="M 40,25 l -10,-15 q 20,-5 40,0 l -10,15 z" fill="none" stroke="var(--accent-purple)" stroke-width="5" stroke-linejoin="round"/>
+      
+      <!-- Bag tie ribbon -->
+      <path d="M 35,30 q 15,5 30,0" fill="none" stroke="var(--accent-pink)" stroke-width="4" stroke-linecap="round"/>
+      
+      <text x="50" y="70" text-anchor="middle" font-family="Quicksand, sans-serif" font-weight="900" font-size="32" fill="var(--text-main)">$</text>
     </svg>
   </div>
 
@@ -518,6 +639,46 @@
       </div>
       <div id="drug-timer" class="status">--:--:--</div>
     </div>
+
+    <div class="card">
+      <div class="card-header">
+        <h3>🏎️ Racing</h3>
+        <span id="racing-val" class="bar-val">-</span>
+      </div>
+      <div id="racing-timer" class="status">--:--:--</div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <h3>🥤 Booster</h3>
+        <span id="booster-val" class="bar-val">-</span>
+      </div>
+      <div id="booster-timer" class="status">--:--:--</div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <h3>💼 Org. Crime</h3>
+        <span id="oc-val" class="bar-val">-</span>
+      </div>
+      <div id="oc-timer" class="status">--:--:--</div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <h3>📚 Education</h3>
+        <span id="edu-val" class="bar-val">-</span>
+      </div>
+      <div id="edu-timer" class="status">--:--:--</div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <h3>🏦 Bank</h3>
+        <span id="bank-val" class="bar-val">-</span>
+      </div>
+      <div id="bank-timer" class="status">--:--:--</div>
+    </div>
   </div>
 
   <!-- Toast Notification -->
@@ -543,9 +704,15 @@
     }
 
     let energyInterval, nerveInterval, drugInterval, autoSyncInterval;
+    let racingInterval, boosterInterval, ocInterval, eduInterval, bankInterval;
     let energyAlerted = false;
     let nerveAlerted = false;
     let drugAlerted = true; // Inicia como true para não notificar quando carregar a página se já estiver 0
+    let racingAlerted = true;
+    let boosterAlerted = true;
+    let ocAlerted = true;
+    let eduAlerted = true;
+    let bankAlerted = true;
 
     // --- THEME CONTROL (LIGHT / DARK) ---
     function initTheme() {
@@ -758,22 +925,28 @@
       if (!isBackground) refreshBtn.innerText = 'Refreshing...';
 
       try {
-        const [barsRes, cooldownsRes] = await Promise.all([
+        const [barsRes, cooldownsRes, iconsRes] = await Promise.all([
           fetch('https://api.torn.com/v2/user/bars', {
             headers: { 'Accept': 'application/json', 'Authorization': `ApiKey ${apiKey}` }
           }),
           fetch('https://api.torn.com/v2/user/cooldowns', {
+            headers: { 'Accept': 'application/json', 'Authorization': `ApiKey ${apiKey}` }
+          }),
+          fetch('https://api.torn.com/v2/user/icons', {
             headers: { 'Accept': 'application/json', 'Authorization': `ApiKey ${apiKey}` }
           })
         ]);
 
         const data = await barsRes.json();
         const dataCooldowns = await cooldownsRes.json();
+        const dataIcons = await iconsRes.json();
 
-        if (data.error || dataCooldowns.error) {
-          if (!isBackground) showToast(`Torn API Error: ${data.error?.error || dataCooldowns.error?.error || 'Invalid API Key'}`, '⚠️');
+        if (data.error || dataCooldowns.error || dataIcons.error) {
+          if (!isBackground) showToast(`Torn API Error: ${data.error?.error || dataCooldowns.error?.error || dataIcons.error?.error || 'Invalid API Key'}`, '⚠️');
           return;
         }
+
+        const icons = dataIcons.icons || [];
 
         const bars = data.bars;
         const cooldowns = dataCooldowns.cooldowns;
@@ -900,6 +1073,69 @@
             drugAlerted = true;
           }
         }
+
+        // --- NEW ICONS (Racing, Booster, OC, Edu, Bank) ---
+        window.trackerState = window.trackerState || {};
+        const trackList = [
+          { id: 17, timerId: 'racing-timer', valId: 'racing-val', sel: '.el-4', clip: 'racing-clip-rect', title: '🏎️ Racing Ready!', msg: 'Your racing is ready.', key: 'racing' },
+          { id: 42, timerId: 'booster-timer', valId: 'booster-val', sel: '.el-5', clip: 'booster-clip-rect', title: '🥤 Booster Ready!', msg: 'Your booster cooldown is over.', key: 'booster' },
+          { id: 85, timerId: 'oc-timer', valId: 'oc-val', sel: '.el-6', clip: 'oc-clip-rect', title: '💼 OC Ready!', msg: 'Your Organized Crime is ready.', key: 'oc' },
+          { id: 19, timerId: 'edu-timer', valId: 'edu-val', sel: '.el-7', clip: 'edu-clip-rect', title: '📚 Education Ready!', msg: 'Your Education course is complete.', key: 'edu' },
+          { id: 29, timerId: 'bank-timer', valId: 'bank-val', sel: '.el-8', clip: 'bank-clip-rect', title: '🏦 Bank Ready!', msg: 'Your Bank Investment is ready to be collected.', key: 'bank' }
+        ];
+
+        trackList.forEach(item => {
+          const iconData = icons.find(i => i.id === item.id);
+          const until = iconData ? iconData.until : null;
+          const remaining = until ? (until - Math.floor(Date.now() / 1000)) : 0;
+          const timeToUse = Math.max(0, remaining);
+          
+          const timerElem = document.getElementById(item.timerId);
+          document.getElementById(item.valId).innerText = timeToUse > 0 ? 'Active' : 'Ready';
+          
+          let pct = timeToUse === 0 ? 1 : 0;
+          const iconElem = document.querySelector(item.sel);
+          if (timeToUse === 0) {
+            if (iconElem) iconElem.classList.add('drug-alert');
+          } else {
+            if (iconElem) iconElem.classList.remove('drug-alert');
+          }
+          
+          const clipRect = document.getElementById(item.clip);
+          if (clipRect) {
+            clipRect.style.transition = 'all 1s linear';
+            clipRect.setAttribute('height', 100 * pct);
+            clipRect.setAttribute('y', 100 - (100 * pct));
+          }
+          
+          const intervalKey = item.key + 'Interval';
+          const alertedKey = item.key + 'Alerted';
+          
+          // Inicia como alertado para não apitar no primeiro load se já estiver pronto
+          if (window.trackerState[alertedKey] === undefined) {
+             window.trackerState[alertedKey] = true;
+          }
+
+          if (window.trackerState[intervalKey]) clearInterval(window.trackerState[intervalKey]);
+          
+          if (timeToUse > 0) {
+            window.trackerState[alertedKey] = false;
+            window.trackerState[intervalKey] = startCountdown(item.timerId, timeToUse, () => {
+              if (window.trackerState[intervalKey]) clearInterval(window.trackerState[intervalKey]);
+              if (!window.trackerState[alertedKey]) {
+                sendAlert(item.title, item.msg);
+                window.trackerState[alertedKey] = true;
+              }
+            });
+          } else {
+            timerElem.innerText = 'TARGET REACHED!';
+            timerElem.classList.add('done');
+            if (!window.trackerState[alertedKey]) {
+              if (isBackground) sendAlert(item.title, item.msg);
+              window.trackerState[alertedKey] = true;
+            }
+          }
+        });
 
       } catch (err) {
         console.error("Fetch error:", err);
