@@ -1074,21 +1074,26 @@
           }
         }
 
-        // --- NEW ICONS (Racing, Booster, OC, Edu, Bank) ---
+        // --- NEW ICONS & COOLDOWNS (Racing, Booster, OC, Edu, Bank) ---
         window.trackerState = window.trackerState || {};
         const trackList = [
-          { id: 17, timerId: 'racing-timer', valId: 'racing-val', sel: '.el-4', clip: 'racing-clip-rect', title: '🏎️ Racing Ready!', msg: 'Your racing is ready.', key: 'racing' },
-          { id: 42, timerId: 'booster-timer', valId: 'booster-val', sel: '.el-5', clip: 'booster-clip-rect', title: '🥤 Booster Ready!', msg: 'Your booster cooldown is over.', key: 'booster' },
-          { id: 85, timerId: 'oc-timer', valId: 'oc-val', sel: '.el-6', clip: 'oc-clip-rect', title: '💼 OC Ready!', msg: 'Your Organized Crime is ready.', key: 'oc' },
-          { id: 19, timerId: 'edu-timer', valId: 'edu-val', sel: '.el-7', clip: 'edu-clip-rect', title: '📚 Education Ready!', msg: 'Your Education course is complete.', key: 'edu' },
-          { id: 29, timerId: 'bank-timer', valId: 'bank-val', sel: '.el-8', clip: 'bank-clip-rect', title: '🏦 Bank Ready!', msg: 'Your Bank Investment is ready to be collected.', key: 'bank' }
+          { search: 'racing', timerId: 'racing-timer', valId: 'racing-val', sel: '.el-4', clip: 'racing-clip-rect', title: '🏎️ Racing Ready!', msg: 'Your racing is ready.', key: 'racing', isCooldown: false },
+          { search: 'booster', timerId: 'booster-timer', valId: 'booster-val', sel: '.el-5', clip: 'booster-clip-rect', title: '🥤 Booster Ready!', msg: 'Your booster cooldown is over.', key: 'booster', isCooldown: true, cdKey: 'booster' },
+          { search: 'organized crime', timerId: 'oc-timer', valId: 'oc-val', sel: '.el-6', clip: 'oc-clip-rect', title: '💼 OC Ready!', msg: 'Your Organized Crime is ready.', key: 'oc', isCooldown: false },
+          { search: 'education', timerId: 'edu-timer', valId: 'edu-val', sel: '.el-7', clip: 'edu-clip-rect', title: '📚 Education Ready!', msg: 'Your Education course is complete.', key: 'edu', isCooldown: false },
+          { search: 'bank investment', timerId: 'bank-timer', valId: 'bank-val', sel: '.el-8', clip: 'bank-clip-rect', title: '🏦 Bank Ready!', msg: 'Your Bank Investment is ready to be collected.', key: 'bank', isCooldown: false }
         ];
 
         trackList.forEach(item => {
-          const iconData = icons.find(i => i.id === item.id);
-          const until = iconData ? iconData.until : null;
-          const remaining = until ? (until - Math.floor(Date.now() / 1000)) : 0;
-          const timeToUse = Math.max(0, remaining);
+          let timeToUse = 0;
+          if (item.isCooldown) {
+            timeToUse = cooldowns[item.cdKey] || 0;
+          } else {
+            const iconData = icons.find(i => i.title && i.title.toLowerCase().includes(item.search));
+            const until = iconData ? iconData.until : null;
+            const remaining = until ? (until - Math.floor(Date.now() / 1000)) : 0;
+            timeToUse = Math.max(0, remaining);
+          }
           
           const timerElem = document.getElementById(item.timerId);
           document.getElementById(item.valId).innerText = timeToUse > 0 ? 'Active' : 'Ready';
