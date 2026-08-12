@@ -1103,7 +1103,7 @@
         if (energyInterval) clearInterval(energyInterval);
 
         if (energyTime > 0) {
-          energyAlerted = false;
+          if (energyTime > 15) energyAlerted = false;
           energyInterval = startCountdown('energy-timer', energyTime, () => {
             if (energyInterval) clearInterval(energyInterval);
             if (!energyAlerted) {
@@ -1140,7 +1140,7 @@
         if (nerveInterval) clearInterval(nerveInterval);
 
         if (nerveTime > 0) {
-          nerveAlerted = false;
+          if (nerveTime > 15) nerveAlerted = false;
           nerveInterval = startCountdown('nerve-timer', nerveTime, () => {
             if (nerveInterval) clearInterval(nerveInterval);
             if (!nerveAlerted) {
@@ -1188,7 +1188,7 @@
         if (drugInterval) clearInterval(drugInterval);
 
         if (drugTime > 0) {
-          drugAlerted = false;
+          if (drugTime > 15) drugAlerted = false;
           drugInterval = startCountdown('drug-timer', drugTime, () => {
             if (drugInterval) clearInterval(drugInterval);
             if (!drugAlerted) {
@@ -1257,7 +1257,7 @@
           if (window.trackerState[intervalKey]) clearInterval(window.trackerState[intervalKey]);
           
           if (timeToUse > 0) {
-            window.trackerState[alertedKey] = false;
+            if (timeToUse > 15) window.trackerState[alertedKey] = false;
             window.trackerState[intervalKey] = startCountdown(item.timerId, timeToUse, () => {
               if (window.trackerState[intervalKey]) clearInterval(window.trackerState[intervalKey]);
               if (!window.trackerState[alertedKey]) {
