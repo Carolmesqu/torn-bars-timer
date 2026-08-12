@@ -761,6 +761,18 @@
   </div> <!-- End timers-view -->
 
   <div id="bazaar-view" style="display: none;">
+    <!-- My Bazaar -->
+    <div class="bazaar-card">
+      <h3 style="text-align: center; margin-bottom: 10px;">👤 My Bazaar</h3>
+      <div style="text-align: center; margin-bottom: 15px;">
+        <button onclick="fetchMyBazaar()" class="refresh-btn" id="myBazaarBtn" style="width: auto; padding: 8px 16px;">🔄 Load My Bazaar</button>
+      </div>
+      <div id="my-bazaar-info" style="text-align: center; font-size: 1.1rem; font-weight: 600;">
+        <div style="color: var(--text-muted);">Click button to load</div>
+      </div>
+      <div id="my-bazaar-items" class="event-log" style="display: none; margin-top: 15px;"></div>
+    </div>
+
     <div class="bazaar-card">
       <h3 style="text-align: center; margin-bottom: 10px;">🏪 Bazaar Rankings (Likes)</h3>
       
@@ -1280,6 +1292,74 @@
       } finally {
         const refreshBtn = document.getElementById('refreshBtn');
         if (refreshBtn) refreshBtn.innerText = '⚡ Refresh Bars';
+      }
+    }
+
+    async function fetchMyBazaar() {
+      const apiKey = localStorage.getItem('torn_api_key') || document.getElementById('apiKey').value.trim();
+      if (!apiKey) {
+        showToast('Please enter your API Key first.', '⚠️');
+        return;
+      }
+
+      const btn = document.getElementById('myBazaarBtn');
+      btn.innerText = '🔄 Loading...';
+      
+      try {
+        const res = await fetch('https://api.torn.com/v2/user/bazaar', {
+          headers: { 'Accept': 'application/json', 'Authorization': `ApiKey ${apiKey}` }
+        });
+        const data = await res.json();
+
+        if (data.error) {
+          showToast(`API Error: ${data.error.error}`, '⚠️');
+          return;
+        }
+
+        const infoContainer = document.getElementById('my-bazaar-info');
+        const itemsContainer = document.getElementById('my-bazaar-items');
+        itemsContainer.innerHTML = '';
+
+        if (!data.bazaar_exists) {
+          infoContainer.innerHTML = '<span style="color: var(--accent-btn);">You do not own a Bazaar yet (or not high enough level).</span>';
+          itemsContainer.style.display = 'none';
+          return;
+        }
+
+        const statusHtml = data.bazaar_is_open 
+          ? '<span style="color: var(--badge-text); background: var(--badge-bg); padding: 4px 10px; border-radius: 10px;">🟢 OPEN</span>'
+          : '<span style="color: #d32f2f; background: #ffebee; padding: 4px 10px; border-radius: 10px;">🔴 CLOSED</span>';
+        
+        let itemsTotal = 0;
+        let totalValue = 0;
+        
+        if (data.bazaar && data.bazaar.length > 0) {
+          data.bazaar.forEach(item => {
+            itemsTotal += item.quantity;
+            totalValue += (item.quantity * item.price);
+            itemsContainer.innerHTML += `
+              <div class="event-item">
+                <span>${item.name} (x${item.quantity})</span>
+                <span class="event-date">$${item.price.toLocaleString()}</span>
+              </div>
+            `;
+          });
+          itemsContainer.style.display = 'block';
+        } else {
+          itemsContainer.innerHTML = '<div style="text-align: center; color: var(--text-muted); padding: 10px;">Your bazaar is empty.</div>';
+          itemsContainer.style.display = 'block';
+        }
+
+        infoContainer.innerHTML = `
+          <div style="margin-bottom: 10px;">Status: ${statusHtml}</div>
+          <div style="font-size: 0.95rem; color: var(--text-muted);">Items: ${itemsTotal} | Total Value: $${totalValue.toLocaleString()}</div>
+        `;
+
+      } catch (err) {
+        console.error(err);
+        showToast('Failed to fetch your bazaar', '❌');
+      } finally {
+        btn.innerText = '🔄 Refresh My Bazaar';
       }
     }
 
