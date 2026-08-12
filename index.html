@@ -338,6 +338,78 @@
       }
     }
 
+    /* --- NAVIGATION MENU --- */
+    .nav-menu {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+      justify-content: center;
+    }
+
+    .nav-btn {
+      flex: 1;
+      padding: 12px;
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      background: var(--card-bg);
+      border: 2px solid var(--border-color);
+      border-radius: 12px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .nav-btn:hover {
+      background: var(--input-bg);
+      color: var(--text-main);
+    }
+
+    .nav-btn.active {
+      background: var(--accent-btn);
+      color: var(--bg);
+      border-color: var(--accent-purple);
+      box-shadow: 0 4px 15px rgba(255, 113, 206, 0.4);
+    }
+
+    /* --- BAZAAR STYLES --- */
+    .bazaar-card {
+      background: var(--card-bg);
+      padding: 20px;
+      border-radius: 16px;
+      border: 1px solid var(--border-color);
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+      margin-bottom: 20px;
+    }
+    
+    .like-counter {
+      font-size: 3rem;
+      font-weight: 900;
+      color: var(--accent-pink);
+      text-align: center;
+      margin: 10px 0;
+      text-shadow: 0 0 10px rgba(255, 113, 206, 0.3);
+    }
+    
+    .event-log {
+      max-height: 200px;
+      overflow-y: auto;
+      margin-top: 15px;
+      padding-right: 5px;
+    }
+    
+    .event-item {
+      display: flex;
+      justify-content: space-between;
+      padding: 10px;
+      border-bottom: 1px solid var(--border-color);
+      font-size: 0.9rem;
+    }
+    
+    .event-date {
+      color: var(--accent-purple);
+      font-weight: bold;
+    }
+
     /* Toast Notification */
     .toast {
       position: fixed;
@@ -555,8 +627,14 @@
     <button class="theme-toggle" onclick="toggleTheme()" id="themeBtn">🌙 Dark Mode</button>
   </div>
 
-  <!-- User Settings -->
-  <div class="card">
+  <div class="nav-menu">
+    <button id="tab-timers" class="nav-btn active" onclick="switchTab('timers')">⏱️ Timers</button>
+    <button id="tab-bazaar" class="nav-btn" onclick="switchTab('bazaar')">🏪 Bazaar</button>
+  </div>
+
+  <div id="timers-view">
+    <!-- User Settings -->
+    <div class="card">
     <div class="input-group">
       <label for="apiKey">Torn API Key:</label>
       <input type="password" id="apiKey" placeholder="Paste your API Key here..." />
@@ -680,6 +758,46 @@
       <div id="bank-timer" class="status">--:--:--</div>
     </div>
   </div>
+  </div> <!-- End timers-view -->
+
+  <div id="bazaar-view" style="display: none;">
+    <div class="bazaar-card">
+      <h3 style="text-align: center; margin-bottom: 10px;">🏪 Bazaar Rankings (Likes)</h3>
+      
+      <div style="text-align: center; margin-bottom: 20px; display: flex; gap: 10px; justify-content: center; align-items: center; flex-wrap: wrap;">
+        <button onclick="fetchBazaarRankings()" class="refresh-btn" id="bazaarRefreshBtn" style="width: auto; padding: 10px 20px;">🔄 Global Top 10</button>
+        <div style="display: flex; gap: 5px;">
+          <input type="number" id="bazaarTargetId" placeholder="Bazaar ID..." style="width: 120px; padding: 8px; border-radius: 8px; border: 1px solid var(--border-color); background: var(--input-bg); color: var(--text-main);" />
+          <button onclick="fetchSpecificBazaar()" class="refresh-btn" id="bazaarSpecificBtn" style="width: auto; padding: 10px; background: var(--accent-purple);">🔍 Search</button>
+        </div>
+      </div>
+
+      <div id="bazaar-global-container" style="display: flex; gap: 20px; flex-wrap: wrap;">
+        <!-- Trending -->
+        <div style="flex: 1; min-width: 250px;">
+          <h4 style="color: var(--accent-pink); border-bottom: 1px solid var(--border-color); padding-bottom: 5px;">🔥 Trending (Recent Likes)</h4>
+          <div class="event-log" id="bazaar-trending">
+            <div style="text-align: center; color: var(--text-muted); padding: 10px;">Click refresh to load...</div>
+          </div>
+        </div>
+
+        <!-- Most Popular -->
+        <div style="flex: 1; min-width: 250px;">
+          <h4 style="color: var(--accent-purple); border-bottom: 1px solid var(--border-color); padding-bottom: 5px;">⭐ Popular (Total Likes)</h4>
+          <div class="event-log" id="bazaar-popular">
+            <div style="text-align: center; color: var(--text-muted); padding: 10px;">Click refresh to load...</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Specific Search Results -->
+      <div id="bazaar-search-container" style="display: none; margin-top: 10px;">
+        <h4 id="bazaar-search-title" style="color: var(--accent-purple); border-bottom: 1px solid var(--border-color); padding-bottom: 5px; text-align: center;">🔍 Search Results</h4>
+        <div class="event-log" id="bazaar-search-results">
+        </div>
+      </div>
+    </div>
+  </div>
 
   <!-- Toast Notification -->
   <div id="toast" class="toast">
@@ -688,6 +806,21 @@
   </div>
 
   <script>
+    function switchTab(tabId) {
+      document.getElementById('timers-view').style.display = tabId === 'timers' ? 'block' : 'none';
+      document.getElementById('bazaar-view').style.display = tabId === 'bazaar' ? 'block' : 'none';
+      
+      document.getElementById('tab-timers').classList.toggle('active', tabId === 'timers');
+      document.getElementById('tab-bazaar').classList.toggle('active', tabId === 'bazaar');
+    }
+    
+    // Formatar data em Mês Dia (ex: Aug 11)
+    function formatMonthDay(timestamp) {
+      const date = new Date(timestamp * 1000);
+      const options = { month: 'short', day: 'numeric' };
+      return date.toLocaleDateString('en-US', options);
+    }
+
     let toastTimeout;
 
     function showToast(message, icon = '✨') {
@@ -1145,9 +1278,133 @@
       } catch (err) {
         console.error("Fetch error:", err);
       } finally {
-        refreshBtn.innerText = '⚡ Refresh Bars';
+        const refreshBtn = document.getElementById('refreshBtn');
+        if (refreshBtn) refreshBtn.innerText = '⚡ Refresh Bars';
       }
     }
+
+    async function fetchBazaarRankings() {
+      const apiKey = localStorage.getItem('torn_api_key') || document.getElementById('apiKey').value.trim();
+      if (!apiKey) {
+        showToast('Please enter and save your API Key first.', '⚠️');
+        return;
+      }
+
+      const btn = document.getElementById('bazaarRefreshBtn');
+      btn.innerText = '🔄 Loading...';
+
+      try {
+        const res = await fetch('https://api.torn.com/v2/market/bazaar', {
+          headers: { 'Accept': 'application/json', 'Authorization': `ApiKey ${apiKey}` }
+        });
+        const data = await res.json();
+
+        if (data.error) {
+          showToast(`API Error: ${data.error.error}`, '⚠️');
+          return;
+        }
+
+        document.getElementById('bazaar-global-container').style.display = 'flex';
+        document.getElementById('bazaar-search-container').style.display = 'none';
+
+        const trendingBox = document.getElementById('bazaar-trending');
+        const popularBox = document.getElementById('bazaar-popular');
+        
+        trendingBox.innerHTML = '';
+        popularBox.innerHTML = '';
+
+        if (data.bazaar && data.bazaar.trending) {
+          data.bazaar.trending.forEach(bz => {
+            trendingBox.innerHTML += `
+              <div class="event-item">
+                <span>${bz.name} ${bz.is_open ? '🟢' : '🔴'}</span>
+                <span class="event-date">🔥 ${bz.recent_favorites}</span>
+              </div>
+            `;
+          });
+        }
+
+        if (data.bazaar && data.bazaar.most_popular) {
+          data.bazaar.most_popular.forEach(bz => {
+            popularBox.innerHTML += `
+              <div class="event-item">
+                <span>${bz.name} ${bz.is_open ? '🟢' : '🔴'}</span>
+                <span class="event-date">⭐ ${bz.total_favorites}</span>
+              </div>
+            `;
+          });
+        }
+
+      } catch (err) {
+        console.error(err);
+        showToast('Failed to fetch Bazaar Data', '❌');
+      } finally {
+        btn.innerText = '🔄 Global Top 10';
+      }
+    }
+
+  async function fetchSpecificBazaar() {
+    const apiKey = localStorage.getItem('torn_api_key') || document.getElementById('apiKey').value.trim();
+    const targetId = document.getElementById('bazaarTargetId').value.trim();
+    
+    if (!apiKey) {
+      showToast('Please enter your API Key first.', '⚠️');
+      return;
+    }
+    if (!targetId) {
+      showToast('Please enter a Bazaar ID.', '⚠️');
+      return;
+    }
+
+    const btn = document.getElementById('bazaarSpecificBtn');
+    btn.innerText = '⏳';
+
+    try {
+      const res = await fetch(`https://api.torn.com/v2/market/${targetId}/bazaar`, {
+        headers: { 'Accept': 'application/json', 'Authorization': `ApiKey ${apiKey}` }
+      });
+      const data = await res.json();
+
+      if (data.error) {
+        showToast(`API Error: ${data.error.error}`, '⚠️');
+        return;
+      }
+
+      document.getElementById('bazaar-global-container').style.display = 'none';
+      const searchContainer = document.getElementById('bazaar-search-container');
+      const searchTitle = document.getElementById('bazaar-search-title');
+      const searchResults = document.getElementById('bazaar-search-results');
+      
+      searchContainer.style.display = 'block';
+      searchTitle.innerText = `🔍 Results for Bazaar ID: ${targetId}`;
+      searchResults.innerHTML = '';
+
+      if (data.bazaar) {
+        // Render keys generically for whatever stats come back
+        for (const [category, arr] of Object.entries(data.bazaar)) {
+          if (Array.isArray(arr) && arr.length > 0) {
+            arr.forEach(item => {
+              const details = Object.entries(item).filter(([k,v]) => !['id', 'name', 'is_open'].includes(k)).map(([k,v]) => `${k.replace('_', ' ')}: ${v}`).join(' | ');
+              searchResults.innerHTML += `
+                <div class="event-item">
+                  <span>${item.name || 'Unknown'} ${item.is_open ? '🟢' : '🔴'}</span>
+                  <span class="event-date" style="font-size: 0.8rem; text-transform: capitalize;">${category} - ${details}</span>
+                </div>
+              `;
+            });
+          }
+        }
+      } else {
+        searchResults.innerHTML = '<div style="text-align: center; color: var(--text-muted); padding: 10px;">No data found for this Bazaar ID.</div>';
+      }
+
+    } catch (err) {
+      console.error(err);
+      showToast('Failed to fetch specific bazaar', '❌');
+    } finally {
+      btn.innerText = '🔍 Search';
+    }
+  }
   </script>
 </body>
 
